@@ -1,0 +1,35 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+   http://www.springframework.org/schema/beans     
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd
+   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="com.kafka.service" />
+
+	<bean id="consumerConfig" class="kafka.consumer.ConsumerConfig">
+		<constructor-arg>
+			<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<!-- Properties for defining consumer configurations -->
+				<property name="properties">
+					<props>
+						<prop key="zookeeper.connect">localhost:2181</prop>
+						<prop key="group.id">spring_consumer</prop>
+					</props>
+				</property>
+			</bean>
+		</constructor-arg>
+	</bean>
+	<bean id="messageConsumer" class="com.kafka.consumer.impl.MessageConsumer">
+		<property name="topic" value="spring-consumer"></property>
+		<property name="consumerConfig" ref="consumerConfig"></property>
+	</bean>
+
+	<!-- Map of consumer against the topic id's -->
+	<util:map id="topicConsumerMap">
+		<entry key="spring-consumer" value-ref="messageConsumer"></entry>
+	</util:map>
+</beans>
